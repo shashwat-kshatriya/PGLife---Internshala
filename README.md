@@ -15,7 +15,7 @@ Logout Functionality: Securely ends user sessions.
 
 **Technologies Used**
 
-Frontend: HTML, CSS, Bootstrap, JavaScript, React
+Frontend: HTML, CSS, Bootstrap, JavaScript, React.
 Backend: PHP
 Database: DBMS (MySQL for storing user data and PG listings)
 

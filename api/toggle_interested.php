@@ -1,41 +1,38 @@
 <?php
-session_start();
-
-require "../includes/database_connect.php";
+define('PGLIFE_API', true);
+require_once __DIR__ . '/../includes/bootstrap.php';
+require_post_csrf();
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(array("success" => false, "is_logged_in" => false));
-    return;
+    json_response(['success' => false, 'is_logged_in' => false], 401);
 }
-
-$user_id = $_SESSION['user_id'];
-$property_id = $_GET["property_id"];
-
-$sql_1 = "SELECT * FROM interested_users_properties WHERE user_id = $user_id AND property_id = $property_id";
-$result_1 = mysqli_query($conn, $sql_1);
-if (!$result_1) {
-    echo json_encode(array("success" => false, "message" => "Something went wrong"));
-    return;
-}
-
-if (mysqli_num_rows($result_1) > 0) {
-    $sql_2 = "DELETE FROM interested_users_properties WHERE user_id = $user_id AND property_id = $property_id";
-    $result_2 = mysqli_query($conn, $sql_2);
-    if (!$result_2) {
-        echo json_encode(array("success" => false, "message" => "Something went wrong"));
-        return;
-    } else {
-        echo json_encode(array("success" => true, "is_interested" => false, "property_id" => $property_id));
-        return;
+$user_id = (int) $_SESSION['user_id'];
+$property_id = positive_id($_POST['property_id'] ?? null);
+require __DIR__ . '/../includes/database_connect.php';
+$conn->begin_transaction();
+try {
+    // Lock the user's row to serialize toggles across sessions, without a schema change.
+    $user = db_query('SELECT id FROM users WHERE id = ? FOR UPDATE', 'i', [$user_id])->fetch_assoc();
+    if (!$user) {
+        $conn->rollback();
+        unset($_SESSION['user_id']);
+        json_response(['success' => false, 'is_logged_in' => false], 401);
     }
-} else {
-    $sql_3 = "INSERT INTO interested_users_properties (user_id, property_id) VALUES ('$user_id', '$property_id')";
-    $result_3 = mysqli_query($conn, $sql_3);
-    if (!$result_3) {
-        echo json_encode(array("success" => false, "message" => "Something went wrong"));
-        return;
-    } else {
-        echo json_encode(array("success" => true, "is_interested" => true, "property_id" => $property_id));
-        return;
+    $property = db_query('SELECT id FROM properties WHERE id = ?', 'i', [$property_id])->fetch_assoc();
+    if (!$property) {
+        $conn->rollback();
+        json_response(['success' => false, 'message' => 'Property not found.'], 404);
     }
+    $result = db_query('SELECT id FROM interested_users_properties WHERE user_id = ? AND property_id = ?', 'ii', [$user_id, $property_id]);
+    $is_interested = $result->num_rows === 0;
+    if ($is_interested) {
+        db_query('INSERT INTO interested_users_properties (user_id, property_id) VALUES (?, ?)', 'ii', [$user_id, $property_id]);
+    } else {
+        db_query('DELETE FROM interested_users_properties WHERE user_id = ? AND property_id = ?', 'ii', [$user_id, $property_id]);
+    }
+    $conn->commit();
+} catch (Throwable $error) {
+    $conn->rollback();
+    throw $error;
 }
+json_response(['success' => true, 'is_interested' => $is_interested, 'property_id' => $property_id]);

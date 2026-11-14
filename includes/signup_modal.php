@@ -10,6 +10,7 @@
 
             <div class="modal-body">
                 <form id="signup-form" class="form" role="form" method="post" action="api/signup_submit.php">
+                    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -43,7 +44,7 @@
                                 <i class="fas fa-lock"></i>
                             </span>
                         </div>
-                        <input type="password" class="form-control" name="password" placeholder="Password" minlength="6" required>
+                        <input type="password" class="form-control" name="password" placeholder="Password" minlength="12" maxlength="72" required>
                     </div>
 
                     <div class="input-group form-group">
@@ -52,7 +53,7 @@
                                 <i class="fas fa-university"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control" name="college_name" placeholder="College Name" maxlength="150" required>
+                        <input type="text" class="form-control" name="college_name" placeholder="College Name" maxlength="100" required>
                     </div>
 
                     <div class="form-group">

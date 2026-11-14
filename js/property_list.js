@@ -12,10 +12,13 @@ window.addEventListener("load", function () {
             XHR.addEventListener("error", on_error);
 
             // Set up request
-            XHR.open("GET", "api/toggle_interested.php?property_id=" + property_id);
+            XHR.open("POST", "api/toggle_interested.php");
+            var data = new FormData();
+            data.append("property_id", property_id);
+            data.append("csrf_token", document.querySelector('meta[name="csrf-token"]').content);
 
             // Initiate the request
-            XHR.send();
+            XHR.send(data);
 
             document.getElementById("loading").style.display = 'block';
             event.preventDefault();
@@ -26,7 +29,7 @@ window.addEventListener("load", function () {
 var toggle_interested_success = function (event) {
     document.getElementById("loading").style.display = 'none';
 
-    var response = JSON.parse(event.target.responseText);
+    var response = read_response(event);
     if (response.success) {
         var property_id = response.property_id;
 
@@ -42,7 +45,9 @@ var toggle_interested_success = function (event) {
             is_interested_image.classList.remove("fas");
             interested_user_count.innerHTML = parseFloat(interested_user_count.innerHTML) - 1;
         }
-    } else if (!response.success && !response.is_logged_in) {
+    } else if (!response.success && response.is_logged_in === false) {
         window.$("#login-modal").modal("show");
+    } else {
+        alert(response.message || "Something went wrong.");
     }
 };

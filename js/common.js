@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
     var signup_form = document.getElementById("signup-form");
-    signup_form.addEventListener("submit", function (event) {
+    if (signup_form) signup_form.addEventListener("submit", function (event) {
         var XHR = new XMLHttpRequest();
         var form_data = new FormData(signup_form);
 
@@ -21,7 +21,7 @@ window.addEventListener("load", function () {
     });
 
     var login_form = document.getElementById("login-form");
-    login_form.addEventListener("submit", function (event) {
+    if (login_form) login_form.addEventListener("submit", function (event) {
         var XHR = new XMLHttpRequest();
         var form_data = new FormData(login_form);
 
@@ -45,7 +45,7 @@ window.addEventListener("load", function () {
 var signup_success = function (event) {
     document.getElementById("loading").style.display = 'none';
 
-    var response = JSON.parse(event.target.responseText);
+    var response = read_response(event);
     if (response.success) {
         alert(response.message);
         window.location.href = "index.php";
@@ -57,7 +57,7 @@ var signup_success = function (event) {
 var login_success = function (event) {
     document.getElementById("loading").style.display = 'none';
 
-    var response = JSON.parse(event.target.responseText);
+    var response = read_response(event);
     if (response.success) {
         location.reload();
     } else {
@@ -70,3 +70,7 @@ var on_error = function (event) {
 
     alert('Oops! Something went wrong.');
 };
+function read_response(event) {
+    try { return JSON.parse(event.target.responseText); }
+    catch (error) { return {success: false, message: 'Service temporarily unavailable. Please try again.'}; }
+}

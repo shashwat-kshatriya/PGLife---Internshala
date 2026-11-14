@@ -28,7 +28,7 @@
                 } else {
                 ?>
                     <div class='nav-name'>
-                        Hi, <a href="./index.php" style = "text-decoration: none ; color: black;"><?php echo $_SESSION["full_name"] ?></a>
+                        Hi, <a href="./index.php" style = "text-decoration: none ; color: black;"><?php echo e($_SESSION["full_name"]) ?></a>
                     </div>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">
@@ -37,9 +37,10 @@
                     </li>
                     <div class="nav-vl"></div>
                     <li class="nav-item">
-                        <a class="nav-link" href="logout.php">
-                            <i class="fas fa-sign-out-alt"></i>Logout
-                        </a>
+                        <form method="post" action="logout.php">
+                            <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+                            <button class="nav-link btn btn-link" type="submit"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                        </form>
                     </li>
                 <?php
                 }

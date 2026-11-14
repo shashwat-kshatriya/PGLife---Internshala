@@ -10,6 +10,7 @@
 
             <div class="modal-body">
                 <form id="login-form" class="form" role="form" method="post" action="api/login_submit.php">
+                    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -25,7 +26,7 @@
                                 <i class="fas fa-lock"></i>
                             </span>
                         </div>
-                        <input type="password" class="form-control" name="password" placeholder="Password" minlength="6" required>
+                        <input type="password" class="form-control" name="password" placeholder="Password" maxlength="72" required>
                     </div>
 
                     <div class="form-group">

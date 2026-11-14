@@ -23,7 +23,7 @@ Database: DBMS (MySQL for storing user data and PG listings)
 Clone the repository or download the source code.
 Set up a local server using XAMPP or WAMP.
 Paste the SQL code in MySQL editor from DBMS folder.
-Configure the database connection in config.php.
+Use the private configuration procedure in [DEPLOYMENT.md](DEPLOYMENT.md). Never place credentials in the public webroot.
 Start the server and access the application via the browser.
 
 **Future Enhancements**
@@ -32,3 +32,6 @@ Online Payment Integration for easy rent payments.
 
 **License**
 This project is open-source and free to use. Contributions are welcome!
+
+
+Deployment preparation and security setup: [DEPLOYMENT.md](DEPLOYMENT.md).

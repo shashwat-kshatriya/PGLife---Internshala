@@ -1,0 +1,5 @@
+Options -Indexes
+<FilesMatch "(?i)^(?:config.*\.php|.*\.(?:sql|md|log|ini|bak|env|py))$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 /(?:\.git|\.env|DBMS|migrations|tests)(?:/|$)

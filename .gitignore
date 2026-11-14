@@ -1,0 +1,11 @@
+# Private configuration and credentials
+config.php
+config.local.php
+*-config.php
+!config.example.php
+.env
+.env.*
+!.env.example
+*.log
+*.sql.gz
+/backups/
